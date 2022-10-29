@@ -6,7 +6,7 @@ async function main() {
 
     const Manage = await hre.ethers.getContractFactory("Switcher");
 
-    const manage = await Manage.deploy(addr);
+    const manage = await Manage.deploy();
 
     await manage.deployed();
 

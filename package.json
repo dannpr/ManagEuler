@@ -4,5 +4,12 @@
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "@openzeppelin/contracts": "^4.7.3",
     "hardhat": "^2.12.1"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "@nomiclabs/hardhat-etherscan": "^3.1.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "cellar-contracts": "github:PeggyJV/cellar-contracts",
+    "ethereum-waffle": "^3.4.4"
   }
 }
