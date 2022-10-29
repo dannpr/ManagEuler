@@ -3,7 +3,7 @@ import { chains } from '@web3modal/ethereum';
 import { useContractRead, useAccount, useContractWrite, useWaitForTransaction } from '@web3modal/react';
 import erc20abi from '../abi/erc20.json';
 import { ethers } from 'ethers'
-import { getSwitcherContract } from '../services';
+import { getSwitcherContract, getUSDCContract } from '../services';
 import { useState, useEffect } from 'react';
 import switcher from "../abi/Switcher.json";
 
@@ -20,7 +20,7 @@ export const DepositModal = ({ maxBalance, tokenAddress, account } : any) => {
     abi: erc20abi,
     functionName: 'allowance',
     chainId: 5,
-    args: [ account, '0x820350eac12BcD0AB189ddA2D36989DF20D919E5' ]
+    args: [ account, '0x0685e582246fe00373B20370eC0705DC8eE39729' ]
   }
   
   const allowance: any = useContractRead(config)
@@ -62,12 +62,15 @@ const DepositForm = ({ max, tokenAddress, account, isAllowed }: any) => {
   }
   
   const [amount, setAmount] = useState(10);
+  const [loan, setLoan] = useState(5);
+  const [healthFactor, setHealthFactor] = useState((10/5)*100);
+  
 
   const [sliderValue, setSliderValue] = useState(125)
 
   useEffect(() => {
-    console.log((sliderValue/150) * 100)
-  }, [sliderValue, amount])
+    setHealthFactor((amount/loan)*100)
+  }, [amount, loan])
 
   return (
     <VStack spacing={16}>
@@ -96,12 +99,12 @@ const DepositForm = ({ max, tokenAddress, account, isAllowed }: any) => {
           <Box w={'full'}>
             <Text w={'full'} textAlign={'left'}>Loan</Text>
             <HStack w='full'>
-              <NumberInput value={amount} borderColor={amount > max ? 'red.600' : 'teal.500'}>
+              <NumberInput value={loan} borderColor={loan > amount ? 'red.600' : 'teal.500'}>
                 <NumberInputField
                   placeholder={'Amount to receive'}
                   onChange={e => {
                     const result = isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
-                    setAmount(result);
+                    setLoan(result);
                   }}
                 />
               </NumberInput>
@@ -110,34 +113,19 @@ const DepositForm = ({ max, tokenAddress, account, isAllowed }: any) => {
           </Box>
           <Box w={'full'}>
             <Text w={'full'} textAlign={'left'}>Health Factor</Text>
-            <HStack w='full' py={2}>
-              <Slider aria-label='slider-ex-6' defaultValue={125} colorScheme={'teal'} onChange={(val) => setSliderValue(val)} min={100} max={150}>
-                <SliderMark value={100} {...labelStyles}>
-                  100%
-                </SliderMark>
-                <SliderMark value={125} {...labelStyles}>
-                  125%
-                </SliderMark>
-                <SliderMark value={150} {...labelStyles}>
-                  150%
-                </SliderMark>
-                <SliderMark
-                  value={sliderValue}
-                  borderRadius={'md'}
-                  textAlign='center'
-                  bg='teal.500'
-                  color='white'
-                  mt='-10'
-                  ml='-5'
-                  w='12'
-                >
-                  {sliderValue}%
-                </SliderMark>
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
+            <HStack w='full'>
+              <Text textAlign={'center'} flexGrow={1} fontSize={'xs'} >MIN: 125%</Text>
+              <NumberInput value={healthFactor} borderColor={loan > amount ? 'red.600' : 'teal.500'}>
+                <NumberInputField
+                  placeholder={'Health Factor'}
+                  onChange={e => {
+                    const result = isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
+                    setHealthFactor(result);
+                  }}
+                />
+              </NumberInput>
+              <Text textAlign={'center'} flexGrow={1}>%</Text>
+              <Text textAlign={'center'} flexGrow={1} fontSize={'xs'} >MAX: {Math.trunc((amount/loan)*100)}%</Text>
             </HStack>
           </Box>
           <Button
@@ -147,8 +135,15 @@ const DepositForm = ({ max, tokenAddress, account, isAllowed }: any) => {
             w={'full'}
             onClick={() => {
               getSwitcherContract()
-              .then((contract :any) => {
+              .then(async (contract :any) => {
                 console.log(contract)
+                try {
+                  const tx = await contract.deposit('100' + '000000', ethers.utils.parseUnits('8', 1), '50' + '000000', { gasLimit: 400000 });
+                  const result = await tx.wait();
+                  console.log(result)
+                } catch(e) {
+                  console.log(e)
+                }
               })
             }}
             isDisabled={amount > max}
@@ -162,10 +157,13 @@ const DepositForm = ({ max, tokenAddress, account, isAllowed }: any) => {
             _hover={{bgColor: 'whiteAlpha.400'}}
             w={'full'}
             onClick={() => {
-              getSwitcherContract()
+              getUSDCContract()
               .then(async (contract :any) => {
                 try {
-                  const tx = await contract.approve();
+                  const tx = await contract.approve(
+                    '0x0685e582246fe00373B20370eC0705DC8eE39729',
+                    ethers.constants.MaxUint256
+                  );
                   console.log(tx)
                 } catch(e) {
                   console.log(e)
