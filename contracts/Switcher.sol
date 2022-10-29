@@ -137,9 +137,13 @@ contract Switcher {
         emit Withdrawal(address(this).balance, block.timestamp);
 
         IERC20(borrowedToken).approve(EULER_TESTNET, type(uint).max);
-        borrowedDToken.repay(0, type(uint).max);
 
+        // repay the borrowed tokens
+        borrowedDToken.repay(0, type(uint).max);
+        // withdraw the collateral tokens
         eToken.withdraw(0, amountToWithdraw);
+
+        // same for someilier
     }
 
     function changeHF(uint256 newHF) public {
