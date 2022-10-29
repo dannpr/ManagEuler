@@ -63,8 +63,13 @@ contract Switcher {
         markets.enterMarket(0, collateralToken);
         emit Deposit(collateral);
 
-        borrowedDToken.borrow(0, loan); 
-        // Error I get is "e/insufficient-tokens-available"
+        //get the underlying token
+        uint256 eloan = eToken.balanceOfUnderlying(address(this));
+        // Borrow the loan amount
+        borrowedDToken.borrow(0, eloan);
+
+        // deposit in sommelier
+
     }
 
     function manage(uint256 newHealthRatio) public {
@@ -104,7 +109,7 @@ contract Switcher {
     }
 
     
-    function rebalance() public {
+    function rebalance(uint256 healthRatios) public {
         // if the health ratio is greater than 5% 
         // withdraw from euler
         uint256 eamount; 
@@ -136,4 +141,12 @@ contract Switcher {
 
         eToken.withdraw(0, amountToWithdraw);
     }
+
+    function changeHF(uint256 newHF) public {
+        // change the health ratio
+        healthRatios[msg.sender] = newHF;
+        // manage to make the new health ratio
+        manage(newHF);
+    }
+
 }
