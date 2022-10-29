@@ -72,6 +72,9 @@ contract Switcher {
         // Borrow the loan amount
         borrowedDToken.borrow(0, eloan);
 
+        //send back the borrowed token to the user
+        IERC20(borrowedToken).transfer(msg.sender, eloan);
+        
         // deposit in sommelier
 
     }
