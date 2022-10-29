@@ -143,7 +143,7 @@ contract Switcher {
         IERC20(borrowedToken).approve(EULER_TESTNET, type(uint).max);
 
         // repay the borrowed tokens
-        borrowedDToken.repay(0, type(uint).max);
+        borrowedDToken.repay(0, amountToWithdraw);
         // withdraw the collateral tokens
         eToken.withdraw(0, amountToWithdraw);
 
