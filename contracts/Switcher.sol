@@ -24,6 +24,7 @@ contract Switcher {
     event VerifySettings(address token, uint256 healthRatio);
     event Rebalance(address _beneficiary, address _owner, uint256 _amount);
     event Management(address _beneficiary, address _owner, uint256 _healthRatio);
+    event VerifyEloan(uint256 _borrowedAmount);
 
     constructor() payable {
         owner = payable(msg.sender);
@@ -65,8 +66,11 @@ contract Switcher {
 
         //get the underlying token
         uint256 eloan = eToken.balanceOfUnderlying(address(this));
+
+        emit VerifyEloan(eloan);
+    
         // Borrow the loan amount
-        borrowedDToken.borrow(0, eloan);
+        //borrowedDToken.borrow(0, eloan);
 
         // deposit in sommelier
 
