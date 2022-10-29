@@ -96,7 +96,7 @@ contract Switcher {
     //         uint256 amount = (currentHealthRatio - newHealthRatio) * currentBalance;
             
     //         // approve & repay the amount of tokens
-    //         IERC20(borrowedToken).approve(EULER_MAINNET, type(uint).max);
+    //         IERC20(borrowedToken).approve(EULER_TESTNET, type(uint).max);
     //         borrowedDToken.repay(0, amount);
 
     //         // withdraw the amount of tokens

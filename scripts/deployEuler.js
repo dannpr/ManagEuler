@@ -2,7 +2,6 @@ const hre = require("hardhat");
 
 async function main() {
     const addr = "0x8EfA5dA2966d4ef0F5Ea6826Dec64447DD9c75Cc";
-    const tokenvalue = hre.ethers.utils.parseEther("1");
 
     const Manage = await hre.ethers.getContractFactory("Switcher");
 
