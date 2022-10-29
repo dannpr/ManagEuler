@@ -6,6 +6,7 @@
     "hardhat": "^2.12.1"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.11",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.2",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
@@ -13,6 +14,7 @@
     "chai": "^4.3.6",
     "dotenv": "^16.0.3",
     "ethereum-waffle": "^3.4.4",
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "react-router-dom": "^6.4.2"
   }
 }

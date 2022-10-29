@@ -14,32 +14,20 @@ import {
   HStack,
   Image,
 } from "@chakra-ui/react"
-import { Web3Button, useAccount, useBalance, useToken } from '@web3modal/react';
-import tokenList from '../goerli-tokenlist.json'
 import { Token } from "../components/Token";
+import { useLoaderData } from "react-router-dom";
 
 export const Deposit = () => {
 
-  const { account }: any = useAccount();
-
-  const { data, error, isLoading, refetch } = useBalance({
-    addressOrName: account.address
-  })
+  const { tokens, balances }: any = useLoaderData()
 
   return ( 
-      <VStack h={'90vh'} flexGrow={1} w='full' justifyContent={'center'} alignItems={'center'} spacing={3}>
-        {
-          account.isConnected == false ?
-            <>
-              <Heading size={'4xl'}>Euler</Heading>
-              <Heading>Earn yield on unused collateral</Heading>
-            </>
-          : <>
-              {tokenList.tokens.map((token, index) => (
-                <Token token={token} key={index}/>
-              ))}
-            </>
-        }
+      <VStack flexGrow={1} w='full' justifyContent={'flex-start'} alignItems={'center'} spacing={3} my={20}>
+        <Heading fontSize={'6xl'}  w={'80%'} textAlign={'left'} justifySelf={'flex-start'} fontFamily={'volkhov'}>All Assets</Heading>
+
+        {tokens.map((token: any, index: number) => (
+          <Token token={token} key={index} balance={balances[index]}/>
+        ))}
       </VStack>
   )
 }

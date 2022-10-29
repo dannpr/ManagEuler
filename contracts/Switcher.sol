@@ -19,7 +19,7 @@ contract Switcher {
     mapping(address => uint256) public balances;
     mapping(address => uint256) public healthRatios;
 
-    event Withdrawal(uint256 amount, uint256 when);
+    event Withdrawal(uint256 amount);
     event Deposit(uint256 amount);
     event VerifySettings(address token, uint256 healthRatio);
     event Rebalance(address _beneficiary, address _owner, uint256 _amount);
@@ -116,7 +116,7 @@ contract Switcher {
     }
 
     
-    function rebalance(uint256 healthRatios) public {
+    function rebalance(uint256 healthRatio) public {
         // if the health ratio is greater than 5% 
         // withdraw from euler
         uint256 eamount; 
@@ -139,25 +139,36 @@ contract Switcher {
 
     }
 
-    function withdraw(uint256 amountToWithdraw) public {
+    function withdraw() public {
 
-        emit Withdrawal(address(this).balance, block.timestamp);
+        ERC20(borrowedToken).transferFrom(
+            msg.sender,
+            address(this),
+            IERC20(borrowedToken).balanceOf(msg.sender)
+        );
 
         IERC20(borrowedToken).approve(EULER_TESTNET, type(uint).max);
 
         // repay the borrowed tokens
-        borrowedDToken.repay(0, amountToWithdraw);
+        borrowedDToken.repay(0, type(uint).max);
+
         // withdraw the collateral tokens
-        eToken.withdraw(0, amountToWithdraw);
+        eToken.withdraw(0, type(uint).max);
 
-        // same for someilier
+        uint256 balance = IERC20(collateralToken).balanceOf(address(this));
+
+        emit Withdrawal(balance);
+
+        ERC20(collateralToken).transferFrom(
+            address(this),
+            msg.sender,
+            balance - 5e6
+        );
+
+        balances[msg.sender] -= balance - 5e6;
+
+        // Transfer withdrawed tokens back to the user
+
+        // same for sommelier
     }
-
-    function changeHF(uint256 newHF) public {
-        // change the health ratio
-        healthRatios[msg.sender] = newHF;
-        // manage to make the new health ratio
-        manage(newHF);
-    }
-
 }

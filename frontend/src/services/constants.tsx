@@ -1,0 +1,1 @@
+export const EulerManager = "0xF55674b870238Ff69Fa0F70b579Fb176D7CA5025";

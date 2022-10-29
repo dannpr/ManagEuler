@@ -1,12 +1,13 @@
 import { Box, Button, Heading, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, NumberInput, NumberInputField, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Text, useBreakpointValue, useDisclosure, useFocusEffect, VStack } from '@chakra-ui/react';
+import { chains } from '@web3modal/ethereum';
+import { useContractRead, useAccount, useContractWrite, useWaitForTransaction } from '@web3modal/react';
 import erc20abi from '../abi/erc20.json';
 import { ethers } from 'ethers'
 import { getSwitcherContract, getTokenContract } from '../services';
 import { useState, useEffect } from 'react';
 import switcher from "../abi/Switcher.json";
-import { EulerManager } from '../services/constants';
 
-export const DepositModal = ({ maxBalance, token, account } : any) => {
+export const HealthFactorModal = ({ maxBalance, tokenAddress, account } : any) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const Overlay = () => (
     <ModalOverlay bg="blackAlpha.700" />
@@ -14,21 +15,23 @@ export const DepositModal = ({ maxBalance, token, account } : any) => {
 
   const modalSize = useBreakpointValue({ base: "xs", sm: "sm", md: "md" });
 
-  const [isAllowed, setIsAllowed] = useState(false);
-
-  useEffect(() => {
-    const checkAllowance = async () => {
-      const tokenContract = await getTokenContract(token.address);
-      const allowance = await (await tokenContract).allowance(account, EulerManager);
-      setIsAllowed(parseFloat(ethers.utils.formatUnits(allowance, 6)) > 0);
-    }
-    checkAllowance();
-  }, [])
-      
+  const config = {
+    address: '0x0685e582246fe00373B20370eC0705DC8eE39729',
+    abi: switcher.abi,
+    functionName: 'healthRatios',
+    chainId: 5,
+    args: [ account ]
+  }
+  
+  const healthFactor: any = useContractRead(config)
+  console.log(healthFactor.data)
+  
+//   const isAllowed = healthFactor.data !== undefined && parseFloat(ethers.utils.formatEther(allowance.data)) > 0;
+    
   return (
     <>
-      <Button colorScheme='teal' variant='outline' _hover={{bgColor: 'whiteAlpha.400'}} size={'sm'} onClick={onOpen}>
-        Deposit
+      <Button colorScheme='teal' variant='outline' _hover={{bgColor: 'whiteAlpha.200'}} size={'sm'} onClick={onOpen}>
+        Manage HF: {healthFactor.data !== undefined ? parseFloat(ethers.utils.formatUnits(healthFactor.data, 1))*10 + '%' : '-'}
       </Button>
       <Modal
         isCentered
@@ -42,7 +45,7 @@ export const DepositModal = ({ maxBalance, token, account } : any) => {
           <ModalCloseButton />
           <Box>
             <ModalBody textAlign={"center"} px={16} py={12}>
-              <DepositForm max={maxBalance} token={token.address} account={account} isAllowed={isAllowed}/>
+              {/* <HealthForm max={maxBalance} tokenAddress={tokenAddress} account={account} isAllowed={isAllowed}/> */}
             </ModalBody>
           </Box>
       </ModalContent>
@@ -51,7 +54,8 @@ export const DepositModal = ({ maxBalance, token, account } : any) => {
   )
 }
 
-const DepositForm = ({ max, token, account, isAllowed }: any) => {
+const HealthForm = ({ max, tokenAddress, account, isAllowed }: any) => {
+  
   const labelStyles = {
     mt: '2',
     ml: '-2.5',
@@ -61,6 +65,8 @@ const DepositForm = ({ max, token, account, isAllowed }: any) => {
   const [amount, setAmount] = useState(10);
   const [loan, setLoan] = useState(5);
   const [healthFactor, setHealthFactor] = useState((10/5)*100);
+  
+  console.log(healthFactor)
 
   useEffect(() => {
     setHealthFactor(Math.trunc((amount/loan)*100))
@@ -130,8 +136,9 @@ const DepositForm = ({ max, token, account, isAllowed }: any) => {
             onClick={() => {
               getSwitcherContract()
               .then(async (contract :any) => {
+                console.log(contract)
                 try {
-                  const tx = await contract.deposit((amount*1000000).toString(), ethers.utils.parseUnits((healthFactor/10).toString(), 1), (loan*1000000).toString(), { gasLimit: 5000000 });
+                  const tx = await contract.deposit((amount*1000000).toString(), ethers.utils.parseUnits((healthFactor/10).toString(), 1), (loan*1000000).toString(), { gasLimit: 400000 });
                   const result = await tx.wait();
                   console.log(result)
                 } catch(e) {
@@ -149,16 +156,19 @@ const DepositForm = ({ max, token, account, isAllowed }: any) => {
             variant='outline'
             _hover={{bgColor: 'whiteAlpha.400'}}
             w={'full'}
-            onClick={async () => {
+            onClick={() => {
+              getTokenContract('0x693FaeC006aeBCAE7849141a2ea60c6dd8097E25')
+              .then(async (contract :any) => {
                 try {
-                  const tx = await (await getTokenContract(token)).approve(
-                    EulerManager,
+                  const tx = await contract.approve(
+                    '0x0685e582246fe00373B20370eC0705DC8eE39729',
                     ethers.constants.MaxUint256
                   );
                   console.log(tx)
                 } catch(e) {
                   console.log(e)
                 }
+              })
             }}
           >
             Approve Contract
