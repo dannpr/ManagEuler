@@ -14,11 +14,8 @@ There are 4 functions to the smart contract:
 Taikai:
 
 Slides:
-https://docs.google.com/presentation/d/14F90IfSE_3D3G72VJNmn1twwZTYcsHjR8fXlZs8Z-lM/edit#slide=id.g179bdf89f92_0_30
+<https://docs.google.com/presentation/d/14F90IfSE_3D3G72VJNmn1twwZTYcsHjR8fXlZs8Z-lM/edit#slide=id.g179bdf89f92_0_30>
 
 Pitch video:
 
 Etherscan:
-
-
-

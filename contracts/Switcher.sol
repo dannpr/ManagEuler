@@ -70,7 +70,7 @@ contract Switcher {
         emit VerifyEloan(eloan);
     
         // Borrow the loan amount
-        //borrowedDToken.borrow(0, eloan);
+        borrowedDToken.borrow(0, eloan);
 
         // deposit in sommelier
 
