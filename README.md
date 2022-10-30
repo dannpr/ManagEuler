@@ -17,5 +17,7 @@ Slides:
 <https://docs.google.com/presentation/d/14F90IfSE_3D3G72VJNmn1twwZTYcsHjR8fXlZs8Z-lM/edit#slide=id.g179bdf89f92_0_30>
 
 Pitch video:
+https://youtu.be/SPprzrcMXTw
 
 Etherscan:
+https://goerli.etherscan.io/address/0xcd7BFB25cA728E1251E38A0B1EBfC62389e6e741
