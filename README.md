@@ -12,6 +12,7 @@ There are 4 functions to the smart contract:
 - Manage: change the health factor of your position
 
 Taikai:
+https://taikai.network/ethlisbon/hackathons/ethlisbon-2022/projects/cl9so13zd54692701zct8qpnz52/idea
 
 Slides:
 <https://docs.google.com/presentation/d/14F90IfSE_3D3G72VJNmn1twwZTYcsHjR8fXlZs8Z-lM/edit#slide=id.g179bdf89f92_0_30>
